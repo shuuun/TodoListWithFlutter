@@ -13,7 +13,23 @@ class AddTodoPage extends StatelessWidget {
   }
 }
 
-class CreateTodo extends StatelessWidget {
+class CreateTodo extends StatefulWidget {
+  @override
+  _CreateTodoState createState() => _CreateTodoState();
+}
+
+class _CreateTodoState extends State<CreateTodo> {
+
+  final titleTextController = TextEditingController();
+  final limitTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    titleTextController.dispose();
+    limitTextController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -24,10 +40,36 @@ class CreateTodo extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 30, 10),
               child: TextFormField(
-                maxLength: 20,
+                maxLength: 25,
+                controller: titleTextController,
                 decoration: InputDecoration(
-                  labelText: "TODO",
+                  labelText: 'Title',
                   icon: Icon(Icons.directions_run)
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 30, 10),
+              child: TextFormField(
+                controller: limitTextController,
+                decoration: InputDecoration(
+                  labelText: 'Limit',
+                  icon: Icon(Icons.timer),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: RaisedButton(
+                elevation: 0,
+                padding: EdgeInsets.fromLTRB(50, 17, 50, 17),
+                onPressed: () {
+                  registerTodo(titleTextController.text, limitTextController.text);
+                },
+                color: Colors.red,
+                child: Text(
+                  "Register", 
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             )
@@ -36,4 +78,9 @@ class CreateTodo extends StatelessWidget {
       ),
     );
   }
+}
+
+void registerTodo(String title, String limit) {
+  print(title);
+  print(limit);
 }
