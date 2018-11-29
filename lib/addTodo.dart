@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dbConnection.dart';
 
 class AddTodoPage extends StatelessWidget {
   @override
@@ -22,6 +23,7 @@ class _CreateTodoState extends State<CreateTodo> {
 
   final titleTextController = TextEditingController();
   final limitTextController = TextEditingController();
+  final firebaseConnector = FirebaseConnector();
 
   @override
   void dispose() {
@@ -78,9 +80,8 @@ class _CreateTodoState extends State<CreateTodo> {
       ),
     );
   }
-}
 
-void registerTodo(String title, String limit) {
-  print(title);
-  print(limit);
+  void registerTodo(String title, String limit) {
+    firebaseConnector.writeDataBase(title, limit);
+  }
 }
