@@ -34,21 +34,19 @@ class TodoListView extends StatefulWidget {
 }
 
 class _TodoListViewState extends State<TodoListView> {
+  bool isRefreshed = false;
   List<TodoEntry> tasks;
+  RefreshCallback onRefresh;
+
   final _mainRefarence = FirebaseDatabase.instance.reference();
-  StreamSubscription<Event> _onTasksAddedSubscription;
+  StreamSubscription<Event> result;
+  Completer<Null> completer;
 
   @override 
   void initState() {
     super.initState();
     tasks = new List();
-    _onTasksAddedSubscription = _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
-  }
-
-  @override
-  void dispose() {
-    _onTasksAddedSubscription.cancel();
-    super.dispose();
+    _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
   }
 
   void _onTodoAdded(Event e) {
@@ -57,17 +55,45 @@ class _TodoListViewState extends State<TodoListView> {
     });
   }
 
+  @override 
+  void dispose() {
+    result.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.all(16.0),
-      itemCount: tasks.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          title: Text('${tasks[index].title}'),
-          subtitle: Text('${tasks[index].limit}'),
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: refresh,
+      displacement: 10, 
+      child: ListView.builder(
+        padding: EdgeInsets.all(16.0),
+        itemCount: tasks.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (index.isOdd) {
+            return Divider(
+              color: Colors.black,
+            );
+          }
+          return ListTile(
+            title: Text('${tasks[index].title}'),
+            subtitle: Text('${tasks[index].limit}'),
+          );
+        },
+      )
     );
+  }
+
+  Future<Null> addTodo() async {
+    _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
+  }
+
+  Future<Null> refresh() async {
+    final Completer<Null> completer = new Completer<Null>();
+    tasks.clear();
+    addTodo().then((_) {
+      completer.complete();
+    });
+    return completer.future;
   }
 }

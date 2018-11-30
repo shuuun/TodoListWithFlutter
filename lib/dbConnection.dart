@@ -2,26 +2,23 @@ import 'package:firebase_database/firebase_database.dart';
 
 class TodoEntry {
 
-  String _key;
-  String _title;
-  String _limit;
+  String key;
+  String title;
+  String limit;
 
-  String get key => _key;
-  String get title => _title;
-  String get limit => _limit;
-
-  TodoEntry(this._key, this._title, this._limit);
-
-  TodoEntry.map(dynamic obj) {
-    this._key = obj['key'];
-    this._title = obj['title'];
-    this._limit = obj['limit'];
-  }
+  TodoEntry(this.key, this.title, this.limit);
 
   TodoEntry.fromSnapShot(DataSnapshot snapshot): 
-    _key = snapshot.key,
-    _title = snapshot.value['title'],
-    _limit = snapshot.value['limit'];
+    key = snapshot.key,
+    title = snapshot.value['title'],
+    limit = snapshot.value['limit'];
+
+  toJson() {
+    return {
+      'title': title,
+      'limit': limit
+    };
+  }
 }
 
 class FirebaseConnector {
