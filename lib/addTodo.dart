@@ -65,8 +65,13 @@ class _CreateTodoState extends State<CreateTodo> {
               child: RaisedButton(
                 elevation: 0,
                 padding: EdgeInsets.fromLTRB(50, 17, 50, 17),
+                disabledColor: Colors.grey,
                 onPressed: () {
-                  registerTodo(titleTextController.text, limitTextController.text);
+                  if (titleTextController.text == '' || limitTextController.text == '') {
+                    print('中身がないです。');
+                  } else {
+                    registerTodo(titleTextController.text, limitTextController.text);
+                  }
                 },
                 color: Colors.red,
                 child: Text(
@@ -83,5 +88,7 @@ class _CreateTodoState extends State<CreateTodo> {
 
   void registerTodo(String title, String limit) {
     firebaseConnector.writeDataBase(title, limit);
+    titleTextController.clear();
+    limitTextController.clear();
   }
 }
