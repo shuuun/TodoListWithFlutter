@@ -36,6 +36,7 @@ class TodoListView extends StatefulWidget {
 class _TodoListViewState extends State<TodoListView> {
   bool isRefreshed = false;
   List<TodoEntry> tasks;
+  List<TodoEntry> getTodos;
   RefreshCallback onRefresh;
 
   final _mainRefarence = FirebaseDatabase.instance.reference();
@@ -51,7 +52,7 @@ class _TodoListViewState extends State<TodoListView> {
 
   void _onTodoAdded(Event e) {
     setState(() {
-      tasks.add(TodoEntry.fromSnapShot(e.snapshot));
+      tasks.add(TodoEntry.fromSnapshot(e.snapshot));
     });
   }
 
@@ -75,9 +76,14 @@ class _TodoListViewState extends State<TodoListView> {
               color: Colors.black,
             );
           }
+          // print('tasks length is ${tasks.length}');
+          // print('$index');
           return ListTile(
             title: Text('${tasks[index].title}'),
             subtitle: Text('${tasks[index].limit}'),
+            onTap: () {
+              _showAlertDialog(context, tasks[index].title, tasks[index].limit);
+            },
           );
         },
       )
@@ -85,15 +91,78 @@ class _TodoListViewState extends State<TodoListView> {
   }
 
   Future<Null> addTodo() async {
+    tasks = new List();
     _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
   }
 
   Future<Null> refresh() async {
+    print('リフレッシュスタート');
     final Completer<Null> completer = new Completer<Null>();
-    tasks.clear();
     addTodo().then((_) {
       completer.complete();
     });
+    print('リフレッシュ終了');
     return completer.future;
+  }
+}
+
+void _showAlertDialog(BuildContext context, String title, String limit) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('$title'),
+        content: Text('$limit'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          FlatButton(
+            child: Text('Delete'),
+            onPressed: () {},
+          ),
+        ],
+      );
+    }
+  );
+}
+
+class TodoAlertDialog extends StatefulWidget {
+
+  final String title;
+  final String limit;
+
+  TodoAlertDialog({@required this.title, @required this.limit});
+
+  @override
+  _TodoAlertDialogState createState() => _TodoAlertDialogState();
+}
+
+class _TodoAlertDialogState extends State<TodoAlertDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('${widget.title}'),
+      content: Column(
+        children: <Widget>[
+          Text('${widget.limit}'),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Back'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        FlatButton(
+          child: Text('Delete'),
+          onPressed: () {},
+        )
+      ],
+    );
   }
 }

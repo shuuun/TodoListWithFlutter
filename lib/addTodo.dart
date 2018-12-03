@@ -34,6 +34,7 @@ class _CreateTodoState extends State<CreateTodo> {
 
   @override
   Widget build(BuildContext context) {
+    print('追加画面にきたよ');
     return Form(
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -86,8 +87,8 @@ class _CreateTodoState extends State<CreateTodo> {
     );
   }
 
-  void registerTodo(String title, String limit) {
-    firebaseConnector.writeDataBase(title, limit);
+  Future<Null> registerTodo(String title, String limit) async {
+    await firebaseConnector.writeDataBase(title, limit);
     titleTextController.clear();
     limitTextController.clear();
   }

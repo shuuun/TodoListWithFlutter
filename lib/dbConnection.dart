@@ -8,8 +8,7 @@ class TodoEntry {
 
   TodoEntry(this.key, this.title, this.limit);
 
-  TodoEntry.fromSnapShot(DataSnapshot snapshot): 
-    key = snapshot.key,
+  TodoEntry.fromSnapshot(DataSnapshot snapshot): 
     title = snapshot.value['title'],
     limit = snapshot.value['limit'];
 
@@ -25,10 +24,11 @@ class FirebaseConnector {
   final _mainRefarence = FirebaseDatabase.instance.reference();
   List<TodoEntry> entries;
 
-  void writeDataBase(String title, String limit) {
+  Future<Null> writeDataBase(String title, String limit) async {
     _mainRefarence.child('Tasks').push().set({
       'title': title,
       'limit': limit
     });
+    print('finish');
   }
 }
