@@ -9,6 +9,7 @@ class TodoEntry {
   TodoEntry(this.key, this.title, this.limit);
 
   TodoEntry.fromSnapshot(DataSnapshot snapshot): 
+    key = snapshot.key,
     title = snapshot.value['title'],
     limit = snapshot.value['limit'];
 
@@ -30,5 +31,10 @@ class FirebaseConnector {
       'limit': limit
     });
     print('finish');
+  }
+
+  Future<Null> deleteTodoTasks(String key) async {
+    _mainRefarence.child('Tasks').child('$key').remove().then((_) {
+    });
   }
 }

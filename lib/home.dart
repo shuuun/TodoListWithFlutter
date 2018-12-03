@@ -82,7 +82,7 @@ class _TodoListViewState extends State<TodoListView> {
             title: Text('${tasks[index].title}'),
             subtitle: Text('${tasks[index].limit}'),
             onTap: () {
-              _showAlertDialog(context, tasks[index].title, tasks[index].limit);
+              _showAlertDialog(context, tasks[index].key, tasks[index].title, tasks[index].limit);
             },
           );
         },
@@ -106,13 +106,20 @@ class _TodoListViewState extends State<TodoListView> {
   }
 }
 
-void _showAlertDialog(BuildContext context, String title, String limit) {
+void _showAlertDialog(BuildContext context, String key, String title, String limit) {
+  final firebaseConnector = FirebaseConnector();
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('$title'),
-        content: Text('$limit'),
+        title: Text('$key'),
+        
+        content: Row(
+          children: <Widget>[
+            Text('$title!!!'),
+            Text('$limit'),
+          ],
+        ),
         actions: <Widget>[
           FlatButton(
             child: Text('Cancel'),
@@ -122,7 +129,9 @@ void _showAlertDialog(BuildContext context, String title, String limit) {
           ),
           FlatButton(
             child: Text('Delete'),
-            onPressed: () {},
+            onPressed: () {
+              firebaseConnector.deleteTodoTasks(key);
+            },
           ),
         ],
       );
