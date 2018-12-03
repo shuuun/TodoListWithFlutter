@@ -34,7 +34,6 @@ class _CreateTodoState extends State<CreateTodo> {
 
   @override
   Widget build(BuildContext context) {
-    print('追加画面にきたよ');
     return Form(
       child: Padding(
         padding: EdgeInsets.all(16),

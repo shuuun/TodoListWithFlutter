@@ -36,18 +36,17 @@ class TodoListView extends StatefulWidget {
 class _TodoListViewState extends State<TodoListView> {
   bool isRefreshed = false;
   List<TodoEntry> tasks;
-  List<TodoEntry> getTodos;
   RefreshCallback onRefresh;
-
+  final firebaseConnector = FirebaseConnector();
   final _mainRefarence = FirebaseDatabase.instance.reference();
   StreamSubscription<Event> result;
   Completer<Null> completer;
+  int tasksCount = 0;
 
   @override 
   void initState() {
     super.initState();
-    tasks = new List();
-    _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
+    refresh();
   }
 
   void _onTodoAdded(Event e) {
@@ -71,19 +70,25 @@ class _TodoListViewState extends State<TodoListView> {
         padding: EdgeInsets.all(16.0),
         itemCount: tasks.length,
         itemBuilder: (BuildContext context, int index) {
-          if (index.isOdd) {
-            return Divider(
-              color: Colors.black,
-            );
-          }
-          // print('tasks length is ${tasks.length}');
-          // print('$index');
-          return ListTile(
-            title: Text('${tasks[index].title}'),
-            subtitle: Text('${tasks[index].limit}'),
-            onTap: () {
-              _showAlertDialog(context, tasks[index].key, tasks[index].title, tasks[index].limit);
+          return Dismissible(
+            key: Key(tasks[index].key),
+            onDismissed: (direction) {
+              setState(() {
+                firebaseConnector.deleteTodoTasks(tasks[index].key);
+                tasks.removeAt(index);
+              });
             },
+            background: Container(
+              color: Colors.red, 
+            ),
+            child: ListTile(
+              key: Key(tasks[index].key),
+              title: Text('${tasks[index].title}'),
+              subtitle: Text('${tasks[index].limit}'),
+              onTap: () {
+                _showAlertDialog(context, tasks[index].key, tasks[index].title, tasks[index].limit, index);
+              },
+            ),
           );
         },
       )
@@ -92,6 +97,7 @@ class _TodoListViewState extends State<TodoListView> {
 
   Future<Null> addTodo() async {
     tasks = new List();
+    setState(() {});
     _mainRefarence.child('Tasks').onChildAdded.listen(_onTodoAdded);
   }
 
@@ -104,37 +110,43 @@ class _TodoListViewState extends State<TodoListView> {
     print('リフレッシュ終了');
     return completer.future;
   }
-}
 
-void _showAlertDialog(BuildContext context, String key, String title, String limit) {
-  final firebaseConnector = FirebaseConnector();
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('$key'),
-        
-        content: Row(
-          children: <Widget>[
-            Text('$title!!!'),
-            Text('$limit'),
+  void _showAlertDialog(BuildContext context, String key, String title, String limit, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$title'),
+          content: Row(
+            children: <Widget>[
+              Text('$limit'),
+            ],
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Edit'),
+              onPressed: () {
+                
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.restore_from_trash),
+              onPressed: () {
+                firebaseConnector.deleteTodoTasks(key);
+                Navigator.of(context).pop();
+                refresh();
+              },
+              color: Colors.red,
+            )
           ],
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          FlatButton(
-            child: Text('Delete'),
-            onPressed: () {
-              firebaseConnector.deleteTodoTasks(key);
-            },
-          ),
-        ],
-      );
-    }
-  );
+        );
+      }
+    );
+  }
 }

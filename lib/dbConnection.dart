@@ -30,7 +30,6 @@ class FirebaseConnector {
       'title': title,
       'limit': limit
     });
-    print('finish');
   }
 
   Future<Null> deleteTodoTasks(String key) async {
