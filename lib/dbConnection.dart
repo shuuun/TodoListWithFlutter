@@ -36,4 +36,11 @@ class FirebaseConnector {
     _mainRefarence.child('Tasks').child('$key').remove().then((_) {
     });
   }
+
+  Future<Null> updateTodoTasks(String key, String title, String limit) async {
+    _mainRefarence.child('Tasks').child('$key').set({
+      'title': title,
+      'limit': limit
+    });
+  }
 }

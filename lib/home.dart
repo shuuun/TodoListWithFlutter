@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'dbConnection.dart';
+import 'editTodoPage.dart';
 
 
 class HomePage extends StatelessWidget {
@@ -39,7 +40,6 @@ class _TodoListViewState extends State<TodoListView> {
   RefreshCallback onRefresh;
   final firebaseConnector = FirebaseConnector();
   final _mainRefarence = FirebaseDatabase.instance.reference();
-  StreamSubscription<Event> result;
   Completer<Null> completer;
   int tasksCount = 0;
 
@@ -54,13 +54,7 @@ class _TodoListViewState extends State<TodoListView> {
       tasks.add(TodoEntry.fromSnapshot(e.snapshot));
     });
   }
-
-  @override 
-  void dispose() {
-    result.cancel();
-    super.dispose();
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -132,7 +126,12 @@ class _TodoListViewState extends State<TodoListView> {
             FlatButton(
               child: Text('Edit'),
               onPressed: () {
-                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditTodo(snapshotKey: key, title: title, limit: limit,)
+                  )
+                );
               },
             ),
             IconButton(
