@@ -1,3 +1,5 @@
 # todolist
 
-FlutterとFirebaseを使った簡単なTODOアプリ
+FlutterとFirebaseのRealtimeDatabaseを使った　TODOアプリ
+
+iOSではデバッグをしているので普通に動きますが、Androidはわかりません
