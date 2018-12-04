@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'dbConnection.dart';
+import 'home.dart';
 
 class EditTodo extends StatefulWidget {
   final String snapshotKey;
@@ -20,6 +21,7 @@ class _EditTodoState extends State<EditTodo> {
   TextEditingController titleTextController;
   TextEditingController limitTextController;
   final firebaseConnector = FirebaseConnector();
+  final home = TodoListView();
 
   @override
   void initState() {
@@ -83,7 +85,7 @@ class _EditTodoState extends State<EditTodo> {
                   },
                   color: Colors.red,
                   child: Text(
-                    'Register',
+                    'Update',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -97,7 +99,5 @@ class _EditTodoState extends State<EditTodo> {
 
   Future<Null> updateTodo(String key, String title, String limit) async {
     await firebaseConnector.updateTodoTasks(key, title, limit);
-    titleTextController.clear();
-    limitTextController.clear();
   }
 }

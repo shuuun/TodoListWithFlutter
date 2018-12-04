@@ -75,14 +75,19 @@ class _TodoListViewState extends State<TodoListView> {
             background: Container(
               color: Colors.red, 
             ),
-            child: ListTile(
-              key: Key(tasks[index].key),
-              title: Text('${tasks[index].title}'),
-              subtitle: Text('${tasks[index].limit}'),
-              onTap: () {
-                _showAlertDialog(context, tasks[index].key, tasks[index].title, tasks[index].limit, index);
-              },
-            ),
+            child: Column(
+              children: <Widget>[
+                ListTile( 
+                  key: Key(tasks[index].key),
+                  title: Text('${tasks[index].title}'),
+                  subtitle: Text('${tasks[index].limit}'),
+                  onTap: () {
+                    _showAlertDialog(context, tasks[index].key, tasks[index].title, tasks[index].limit, index);
+                  },
+                ),
+                Divider(color: Colors.black,),
+              ],
+            )
           );
         },
       )
@@ -126,6 +131,7 @@ class _TodoListViewState extends State<TodoListView> {
             FlatButton(
               child: Text('Edit'),
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -138,7 +144,7 @@ class _TodoListViewState extends State<TodoListView> {
               icon: Icon(Icons.restore_from_trash),
               onPressed: () {
                 firebaseConnector.deleteTodoTasks(key);
-                Navigator.of(context).pop();
+                Navigator.pop(context);
                 refresh();
               },
               color: Colors.red,
